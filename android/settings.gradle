@@ -1,8 +1,0 @@
-rootProject.name = 'TuyaRnDemo'
-
-include ':tuya-react-sdk'
-project(':tuya-react-sdk').projectDir = new File(rootProject.projectDir, '../sdk/android')
-include ':react-native-wheel-picker'
-project(':react-native-wheel-picker').projectDir = new File(settingsDir, '../node_modules/react-native-wheel-picker/android')
-
-include ':app'

@@ -1,36 +1,32 @@
 {
-  "name": "TuyaRnDemo",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
-  },
-  "dependencies": {
-    "react": "16.8.6",
-    "react-native": "0.59.0",
-    "react-native-loading-spinner-overlay": "^1.0.1",
-    "react-native-root-toast": "^3.1.2",
-    "react-native-scrollable-tab-view": "0.10.0",
-    "react-native-tab-navigator": "^0.3.4",
-    "react-native-wheel-picker": "^1.2.0",
-    "react-navigation": "2.11.2",
-    "react-navigation-redux-helpers": "^2.0.8",
-    "react-redux": "^5.1.0",
-    "redux": "^4.0.1",
-    "redux-actions": "^2.6.3",
-    "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.3.0",
-    "rxjs": "^6.3.3"
-  },
+  "name": "react-native-tuya",
+  "version": "1.0.0",
+  "description": "React Native bindings for the Tuya SDK",
+  "main": "index.js",
+  "module": "index.js",
+  "license": "MIT",
+  "scripts": {},
+  "author": "Chad Smith",
+  "files": [
+    "android",
+    "ios",
+    "index.js",
+    "lib",
+    "react-native-tuya.podspec"
+  ],
+  "homepage": "https://github.com/chadsmith/react-native-tuya",
+  "dependencies": {},
   "devDependencies": {
-    "babel-jest": "23.6.0",
-    "husky": "^3.0.1",
-    "jest": "^23.6.0",
-    "metro-react-native-babel-preset": "0.48.3",
-    "react-test-renderer": "16.6.0-alpha.8af6728"
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.11.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1",
+    "prettier": "1.15.3",
+    "react-native": "^0.61.5"
   },
-  "jest": {
-    "preset": "react-native"
+  "peerDependencies": {
+    "react-native": ">=0.61.5"
   }
 }
