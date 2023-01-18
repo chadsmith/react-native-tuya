@@ -7,6 +7,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.tuya.smart.android.ble.api.ScanDeviceBean;
+import com.tuya.smart.android.ble.api.ScanType;
+import com.tuya.smart.android.ble.api.TyBleScanResponse;
 import com.tuya.smart.android.common.utils.WiFiUtil;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.builder.ActivatorBuilder;
@@ -15,10 +18,13 @@ import com.tuya.smart.home.sdk.builder.TuyaGwSubDevActivatorBuilder;
 import com.tuya.smart.rnsdk.utils.JsonUtils;
 import com.tuya.smart.rnsdk.utils.ReactParamsCheck;
 import com.tuya.smart.rnsdk.utils.TuyaReactUtils;
+import com.tuya.smart.sdk.api.IMultiModeActivator;
+import com.tuya.smart.sdk.api.IMultiModeActivatorListener;
 import com.tuya.smart.sdk.api.ITuyaActivator;
 import com.tuya.smart.sdk.api.ITuyaActivatorGetToken;
 import com.tuya.smart.sdk.api.ITuyaSmartActivatorListener;
 import com.tuya.smart.sdk.bean.DeviceBean;
+import com.tuya.smart.sdk.bean.MultiModeActivatorBean;
 import com.tuya.smart.sdk.enums.ActivatorModelEnum;
 
 import java.util.Arrays;
@@ -40,6 +46,8 @@ public class TuyaActivatorModule extends ReactContextBaseJavaModule {
 
     private ITuyaActivator mITuyaActivator;
     private ITuyaActivator iTuyaActivator;
+    private IMultiModeActivator iMultiModeActivator;
+    private String uuid;
 
     @Nonnull
     @Override
@@ -51,6 +59,65 @@ public class TuyaActivatorModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getCurrentSSID(Promise promise) {
         promise.resolve(WiFiUtil.getCurrentSSID(getReactApplicationContext()));
+    }
+
+    @ReactMethod
+    public void startBluetoothScan(final Promise promise) {
+        TuyaHomeSdk.getBleOperator().startLeScan(60000, ScanType.SINGLE, new TyBleScanResponse() {
+            @Override
+            public void onResult(ScanDeviceBean bean) {
+                promise.resolve(TuyaReactUtils.parseToWritableMap(bean));
+            }
+        });
+    }
+
+    @ReactMethod
+    public void stopBluetoothScan() {
+        TuyaHomeSdk.getBleOperator().stopLeScan();
+    }
+
+
+    @ReactMethod
+    public void initMultiModeActivator(final ReadableMap params, final Promise promise) {
+        if (ReactParamsCheck.checkParams(Arrays.asList(HOMEID, SSID, PASSWORD, TIME, TYPE), params)) {
+            TuyaHomeSdk.getActivatorInstance().getActivatorToken(coverDTL(params.getDouble(HOMEID)), new ITuyaActivatorGetToken() {
+                @Override
+                public void onSuccess(String token) {
+                    stop();
+                    MultiModeActivatorBean multiModeActivatorBean = new MultiModeActivatorBean();
+                    multiModeActivatorBean.ssid = params.getString(SSID);
+                    multiModeActivatorBean.pwd = params.getString(PASSWORD);
+                    uuid = params.getString("uuid");
+                    multiModeActivatorBean.uuid = uuid;
+                    multiModeActivatorBean.deviceType = params.getInt("deviceType");
+                    multiModeActivatorBean.mac = params.getString("mac");
+                    multiModeActivatorBean.address = params.getString("address");
+                    multiModeActivatorBean.homeId = coverDTL(params.getDouble(HOMEID));
+                    multiModeActivatorBean.token = token;
+                    multiModeActivatorBean.timeout = 180000;
+                    multiModeActivatorBean.phase1Timeout = 60000;
+
+
+                    iMultiModeActivator = TuyaHomeSdk.getActivator().newMultiModeActivator();
+                    iMultiModeActivator.startActivator(multiModeActivatorBean, new IMultiModeActivatorListener() {
+                        @Override
+                        public void onSuccess(DeviceBean deviceBean) {
+                            promise.resolve(TuyaReactUtils.parseToWritableMap(deviceBean));
+                        }
+
+                        @Override
+                        public void onFailure(int code, String msg, Object handle) {
+                            promise.reject(String.valueOf(code), msg);
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(String errorCode, String errorMsg) {
+                    promise.reject(errorCode, errorMsg);
+                }
+            });
+        }
     }
 
     @ReactMethod
@@ -98,7 +165,6 @@ public class TuyaActivatorModule extends ReactContextBaseJavaModule {
         }
     }
 
-
     @ReactMethod
     public void stop() {
         if (mITuyaActivator != null) {
@@ -110,6 +176,10 @@ public class TuyaActivatorModule extends ReactContextBaseJavaModule {
             iTuyaActivator.stop();
             iTuyaActivator.onDestroy();
             iTuyaActivator = null;
+        }
+        if (iMultiModeActivator != null && uuid != null) {
+            iMultiModeActivator.stopActivator(uuid);
+            iMultiModeActivator = null;
         }
     }
 
