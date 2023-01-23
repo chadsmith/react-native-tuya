@@ -13,8 +13,8 @@
 #import <CoreLocation/CoreLocation.h>
 #import "TuyaRNUtils+Network.h"
 
-#define kTuyaCoreModuleAppkey @""
-#define kTuyaCoreModuleAppSecret @""
+#define kTuyaCoreModuleAppkey @"appKey"
+#define kTuyaCoreModuleAppSecret @"appSecret"
 #define kTuyaCoreModuleParamLat @"lat"
 #define kTuyaCoreModuleParamLon @"lon"
 
@@ -33,16 +33,12 @@
 RCT_EXPORT_MODULE(TuyaCoreModule)
 
 RCT_EXPORT_METHOD(initWithOptions:(NSDictionary *)params) {
-  
   NSString *appKey = params[kTuyaCoreModuleAppkey];
   NSString *appSecret = params[kTuyaCoreModuleAppSecret];
   
   dispatch_async(dispatch_get_main_queue(), ^{
-//    [[TuyaSmartSDK sharedInstance] startWithAppKey:appKey secretKey:appSecret];
-//#ifdef DEBUG
-//    [TuyaSmartSDK sharedInstance].debugMode = YES;
-//#endif
-    
+    [[TuyaSmartSDK sharedInstance] startWithAppKey:appKey secretKey:appSecret];
+
     if (!self.locationManager) {
       self.locationManager = [CLLocationManager new];
       self.locationManager.delegate = self;
@@ -55,6 +51,31 @@ RCT_EXPORT_METHOD(initWithOptions:(NSDictionary *)params) {
       }
     }
   });
+}
+
+RCT_EXPORT_METHOD(initWithoutOptions) {
+  NSString *appKey = @"";
+  NSString *appSecret = @"";
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[TuyaSmartSDK sharedInstance] startWithAppKey:appKey secretKey:appSecret];
+
+    if (!self.locationManager) {
+      self.locationManager = [CLLocationManager new];
+      self.locationManager.delegate = self;
+    }
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedWhenInUse || [CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways) {
+      [self.locationManager startUpdatingLocation];
+    } else {
+      if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [self.locationManager requestWhenInUseAuthorization];
+      }
+    }
+  });
+}
+
+RCT_EXPORT_METHOD(setDebugMode:(BOOL)enabled) {
+  [[TuyaSmartSDK sharedInstance] setDebugMode:enabled];
 }
 
 //通用api
