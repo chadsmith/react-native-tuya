@@ -21,6 +21,7 @@
 #define kTuyaRNUserModuleNewPassword @"newPassword"
 #define kTuyaRNUserModuleEmail @"email"
 #define kTuyaRNUserModuleUid @"uid"
+#define kTuyaRNUserModuleIsCreateHome @"isCreateHome"
 
 
 #define kTuyaRNUserModuleTwitterKey @"key"
@@ -348,6 +349,20 @@ RCT_EXPORT_METHOD(loginOrRegisterWithUid:(NSDictionary *)params resolver:(RCTPro
 
   [[TuyaSmartUser sharedInstance] loginOrRegisterWithCountryCode:countryCode uid:uid password:password success:^{
     [TuyaRNUtils resolverWithHandler:resolver];
+  } failure:^(NSError *error) {
+    [TuyaRNUtils rejecterWithError:error handler:rejecter];
+  }];
+}
+
+RCT_EXPORT_METHOD(loginOrRegisterWithUidAndCreateHome:(NSDictionary *)params resolver:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter) {
+  
+  NSString *countryCode = params[kTuyaRNUserModuleCountryCode];
+  NSString *uid = params[kTuyaRNUserModuleUid];
+  BOOL create = [params[kTuyaRNUserModuleIsCreateHome] boolValue];
+  NSString *password = params[kTuyaRNUserModulePassword];
+  
+  [[TuyaSmartUser sharedInstance] loginOrRegisterWithCountryCode:countryCode uid:uid password:password createHome:create success:^(id result) {
+    resolver([result yy_modelToJSONObject]);
   } failure:^(NSError *error) {
     [TuyaRNUtils rejecterWithError:error handler:rejecter];
   }];
