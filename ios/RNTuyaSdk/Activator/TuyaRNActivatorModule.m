@@ -128,6 +128,11 @@ RCT_EXPORT_METHOD(openNetworkSettings:(NSDictionary *)params resolver :(RCTPromi
 
 }
 
+RCT_EXPORT_METHOD(stop:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter) {
+
+  [[TuyaSmartActivator sharedInstance] stopConfigWiFi];
+}
+
 RCT_EXPORT_METHOD(onDestory:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromiseRejectBlock)rejecter) {
 
 }
