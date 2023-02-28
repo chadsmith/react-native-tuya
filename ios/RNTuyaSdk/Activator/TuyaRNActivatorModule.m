@@ -153,8 +153,7 @@ RCT_EXPORT_METHOD(onDestory:(RCTPromiseResolveBlock)resolver rejecter:(RCTPromis
   //开始回调
   if (activatorInstance.promiseResolveBlock) {
     NSDictionary *device = [deviceModel yy_modelToJSONObject];
-    NSString *deviceId = device[kTuyaRNActivatorModuleDeviceId];
-    self.promiseResolveBlock(deviceId);
+    self.promiseResolveBlock(device);
   }
 }
 

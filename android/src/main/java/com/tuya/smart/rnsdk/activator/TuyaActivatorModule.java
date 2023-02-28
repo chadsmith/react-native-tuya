@@ -77,7 +77,7 @@ public class TuyaActivatorModule extends ReactContextBaseJavaModule {
 
                                 @Override
                                 public void onStep(String step, Object data) {
-                                    promise.resolve(JsonUtils.toString(data));
+
                                 }
                             });
                     if(ActivatorModelEnum.valueOf(params.getString(TYPE))==ActivatorModelEnum.TY_AP){
@@ -128,7 +128,7 @@ public class TuyaActivatorModule extends ReactContextBaseJavaModule {
 
                 @Override
                 public void onStep(String step, Object data) {
-                    promise.resolve(JsonUtils.toString(data));
+
                 }
             });
             iTuyaActivator = TuyaHomeSdk.getActivatorInstance().newGwSubDevActivator(tuyaGwSubDevActivatorBuilder);
@@ -156,7 +156,7 @@ public class TuyaActivatorModule extends ReactContextBaseJavaModule {
 
                         @Override
                         public void onStep(String step, Object data) {
-                            promise.resolve(JsonUtils.toString(data));
+
                         }
                     };
                     iTuyaActivator = TuyaHomeSdk.getActivatorInstance().newGwActivator(new TuyaGwActivatorBuilder()
